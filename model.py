@@ -13,13 +13,16 @@ def createDeepLabv3(outputchannels=1):
     Returns:
         model: Returns the DeepLabv3 model with the ResNet101 backbone.
     """
+    channels = 4
 
     model = models.segmentation.deeplabv3_resnet50(pretrained=False,
-                                                    progress=True)
+                                                   progress=True)
     
-    model.backbone.conv1 = nn.Conv2d(5, 64, 7, 2, 3, bias = False)
-    
+    if channels > 3:        
+        model.backbone.conv1 = nn.Conv2d(channels, 64, 7, 2, 3, bias = False)
+
     model.classifier = DeepLabHead(2048, outputchannels)
+    
     # Set the model in training mode
     model.train()
     return model
