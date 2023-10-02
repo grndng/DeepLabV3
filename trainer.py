@@ -7,6 +7,13 @@ import numpy as np
 import torch
 from tqdm import tqdm
 
+exp_directory = "Training_3ch"
+
+def check_dir(dirname: str) -> None:
+    if not os.path.exists(f"{os.getcwd()}/{dirname}"):
+        os.mkdir(dirname)
+    else:
+        pass
 
 def train_model(model, criterion, dataloaders, optimizer, metrics, bpath,
                 num_epochs):
@@ -73,10 +80,15 @@ def train_model(model, criterion, dataloaders, optimizer, metrics, bpath,
         with open(os.path.join(bpath, 'log.csv'), 'a', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writerow(batchsummary)
+
             # deep copy the model
             if phase == 'Test' and loss < best_loss:
                 best_loss = loss
                 best_model_wts = copy.deepcopy(model.state_dict())
+
+        check_dir(exp_directory)
+        torch.save(model, f"{exp_directory}/weights_{epoch}.pt")
+
 
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(

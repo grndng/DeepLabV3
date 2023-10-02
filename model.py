@@ -13,7 +13,7 @@ def createDeepLabv3(outputchannels=1):
     Returns:
         model: Returns the DeepLabv3 model with the ResNet101 backbone.
     """
-    channels = 4
+    channels = 3
 
     model = models.segmentation.deeplabv3_resnet50(pretrained=False,
                                                    progress=True)

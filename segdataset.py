@@ -102,7 +102,8 @@ class SegmentationDataset(VisionDataset):
         image_path = self.image_names[index]
         mask_path = self.mask_names[index]
         with open(image_path, "rb") as image_file, open(mask_path, "rb") as mask_file:
-            image = imread(image_file)[:,:,:4]
+            # CHANGE FOR CHANNELS
+            image = imread(image_file)[:,:,:3]
             mask = imread(mask_file)
             
             sample = {"image": image, "mask": mask}
