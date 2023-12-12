@@ -9,13 +9,15 @@ import datahandler
 from model import createDeepLabv3
 from trainer import train_model
 
+from variables import exp_directory as exd
+
 
 @click.command()
 @click.option("--data-directory",
               required=True,
               help="Specify the data directory.")
 @click.option("--exp_directory",
-              required=True,
+              required=False,
               help="Specify the experiment directory.")
 @click.option(
     "--epochs",
@@ -33,7 +35,7 @@ def main(data_directory, exp_directory, epochs, batch_size):
     model.train()
     data_directory = Path(data_directory)
     # Create the experiment directory if not present
-    exp_directory = Path(exp_directory)
+    exp_directory = Path(exd)
     if not exp_directory.exists():
         exp_directory.mkdir()
 
@@ -56,12 +58,12 @@ def main(data_directory, exp_directory, epochs, batch_size):
                     criterion,
                     dataloaders,
                     optimizer,
-                    bpath=exp_directory,
+                    bpath=exd,
                     metrics=metrics,
                     num_epochs=epochs)
 
     # Save the trained model
-    torch.save(model, exp_directory / 'weights.pt')
+    torch.save(model, f"{exd}/{'last_weights.pt'}")
 
 if __name__ == "__main__":
     main()

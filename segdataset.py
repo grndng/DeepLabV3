@@ -10,7 +10,7 @@ from torchvision import transforms
 import numpy as np
 from tifffile import imread
 from torchvision.datasets.vision import VisionDataset
-
+from variables import layer_stack
 
 class SegmentationDataset(VisionDataset):
     """A PyTorch dataset for image segmentation task.
@@ -103,7 +103,21 @@ class SegmentationDataset(VisionDataset):
         mask_path = self.mask_names[index]
         with open(image_path, "rb") as image_file, open(mask_path, "rb") as mask_file:
             # CHANGE FOR CHANNELS
-            image = imread(image_file)[:,:,:3]
+            match layer_stack:
+                case "dsm":
+                    image = imread(image_file)[:,:,4:]
+                case "rgb":
+                    image = imread(image_file)[:,:,:3]
+                case "rgbh":
+                    image = imread(image_file)
+                    rgb = image[:,:,:3]
+                    h = image[:,:,4:]
+                    image = np.dstack((rgb, h))
+                case "rgbi":
+                    image = imread(image)[:,:,:4]
+                case "rgbih":
+                    image = imread(image_file)
+
             mask = imread(mask_file)
             
             sample = {"image": image, "mask": mask}

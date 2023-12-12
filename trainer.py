@@ -6,14 +6,7 @@ import time
 import numpy as np
 import torch
 from tqdm import tqdm
-
-exp_directory = "Training_3ch"
-
-def check_dir(dirname: str) -> None:
-    if not os.path.exists(f"{os.getcwd()}/{dirname}"):
-        os.mkdir(dirname)
-    else:
-        pass
+from variables import exp_directory
 
 def train_model(model, criterion, dataloaders, optimizer, metrics, bpath,
                 num_epochs):
@@ -27,7 +20,7 @@ def train_model(model, criterion, dataloaders, optimizer, metrics, bpath,
     fieldnames = ['epoch', 'Train_loss', 'Test_loss'] + \
         [f'Train_{m}' for m in metrics.keys()] + \
         [f'Test_{m}' for m in metrics.keys()]
-    with open(os.path.join(bpath, 'log.csv'), 'w', newline='') as csvfile:
+    with open(f"{exp_directory}/log.csv", "w", newline="") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
 
@@ -86,7 +79,6 @@ def train_model(model, criterion, dataloaders, optimizer, metrics, bpath,
                 best_loss = loss
                 best_model_wts = copy.deepcopy(model.state_dict())
 
-        check_dir(exp_directory)
         torch.save(model, f"{exp_directory}/weights_{epoch}.pt")
 
 

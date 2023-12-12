@@ -4,7 +4,7 @@ import tifffile
 import pandas as pd
 
 model_MSE = torch.load("./Training_5ch/weights.pt")
-model_BCE = torch.load("./Training_5ch_BCE/weights.pt")
+model_BCE = torch.load("./Training_5ch/weights.pt")
 model_MSE.eval()
 model_BCE.eval()
 
@@ -31,26 +31,34 @@ mask = tifffile.imread(mask_path)
 
 with torch.no_grad():
     a = model_BCE(torch.from_numpy(img).unsqueeze(0).type(torch.cuda.FloatTensor)/255)
+    b = model_MSE(torch.from_numpy(img).unsqueeze(0).type(torch.cuda.FloatTensor)/255)
 
 plt.hist(a['out'].data.cpu().numpy().flatten())
+plt.show()
+
+plt.hist(b['out'].data.cpu().numpy().flatten())
 plt.show()
 
 #img = tifffile.imread(f"C:/Users/dinga/Documents/Doktorat/2023_CD_TrainData_cleansed/02_test_images/{image_name}")
 img = tifffile.imread(image_path)
 img = img[:,:,:3]
 
-plt.figure(figsize=(10,10))
-plt.subplot(131)
-plt.imshow(img)
-plt.title('Image')
-plt.axis('off')
-plt.subplot(132)
-plt.imshow(mask)
-plt.title('Ground Truth')
-plt.axis('off')
-plt.subplot(133)
-plt.imshow(a['out'].cpu().detach().numpy()[0][0]>0)
-plt.title('Segmentation Output')
-plt.axis('off')
-plt.show()
-#plt.savefig('./CFExp/SegmentationOutput.png',bbox_inches='tight')
+def plot_figure(image, mask, prediction, threshold):
+    plt.figure(figsize=(10,10))
+    plt.subplot(131)
+    plt.imshow(image)
+    plt.title('Image')
+    plt.axis('off')
+    plt.subplot(132)
+    plt.imshow(mask)
+    plt.title('Ground Truth')
+    plt.axis('off')
+    plt.subplot(133)
+    plt.imshow(prediction['out'].cpu().detach().numpy()[0][0]>threshold)
+    plt.title('Segmentation Output')
+    plt.axis('off')
+    plt.show()
+
+
+plot_figure(img, mask, a, 0)
+plot_figure(img, mask, b, 0.5)
