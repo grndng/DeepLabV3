@@ -114,7 +114,7 @@ class SegmentationDataset(VisionDataset):
                     h = image[:,:,4:]
                     image = np.dstack((rgb, h))
                 case "rgbi":
-                    image = imread(image)[:,:,:4]
+                    image = imread(image_file)[:,:,:4]
                 case "rgbih":
                     image = imread(image_file)
 

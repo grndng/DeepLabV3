@@ -1,15 +1,16 @@
 import torch
 import matplotlib.pyplot as plt
 import tifffile
+import numpy as np
 import pandas as pd
 
-model_MSE = torch.load("./Training_5ch/weights.pt")
+model_MSE = torch.load("./Training_5ch_MSE/weights.pt")
 model_BCE = torch.load("./Training_5ch/weights.pt")
 model_MSE.eval()
 model_BCE.eval()
 
-df_MSE = pd.read_csv("./Training_5ch/log.csv")
-df_BCE = pd.read_csv("./Training_5ch_BCE/log.csv")
+df_MSE = pd.read_csv("./Training_5ch_MSE/log.csv")
+df_BCE = pd.read_csv("./Training_5ch/log.csv")
 
 # df_MSE.plot(x="epoch", figsize=(15,8))
 # plt.show()
@@ -34,9 +35,11 @@ with torch.no_grad():
     b = model_MSE(torch.from_numpy(img).unsqueeze(0).type(torch.cuda.FloatTensor)/255)
 
 plt.hist(a['out'].data.cpu().numpy().flatten())
+print(np.median(a['out'].data.cpu().numpy().flatten()))
 plt.show()
 
 plt.hist(b['out'].data.cpu().numpy().flatten())
+print(np.median(b['out'].data.cpu().numpy().flatten()))
 plt.show()
 
 #img = tifffile.imread(f"C:/Users/dinga/Documents/Doktorat/2023_CD_TrainData_cleansed/02_test_images/{image_name}")
@@ -61,4 +64,4 @@ def plot_figure(image, mask, prediction, threshold):
 
 
 plot_figure(img, mask, a, 0)
-plot_figure(img, mask, b, 0.5)
+plot_figure(img, mask, b, 0.2)
